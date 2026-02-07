@@ -1,7 +1,18 @@
 import app from './app.js';
+import {connectDB} from "./db/database.js";
+import {PORT} from './config/env.js';
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
-})
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server listening on https::/localhost/${PORT}`);
+        })
+    })
+    .catch((err) => {
+        console.log("Could not connect to MongoDB");
+        console.log(err);
+        process.exit(1);
+    });
+// app.listen(PORT, () => {
+//              console.log(`Server listening on https::/localhost/${PORT}`);
+// });
