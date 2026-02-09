@@ -22,14 +22,14 @@ const checkAuth = async (req, res, next) => {
     }
 }
 
-const generateAccessandRefreshToken = asyncHandler(async (userID) => {
+const generateAccessAndRefreshToken = async (userID) => {
     try{
         const user = await User.findById(userID);
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
         user.refreshToken = refreshToken;
-        await user.save({validateBeforeSave: false});
+        // await user.save();
         return {accessToken, refreshToken};
     }catch(err){
         throw new ApiError(
@@ -37,8 +37,7 @@ const generateAccessandRefreshToken = asyncHandler(async (userID) => {
             "Unable to generate access token",
         )
     }
-
-})
+}
 
 const registerUser = async (req, res, next) => {
     try{
@@ -89,7 +88,7 @@ const registerUser = async (req, res, next) => {
                 new ApiResponse(
                     200,
                     {
-                        user: createdUser,
+                        // newUser: createdUser,
                     },
                     "User created successfully"
                 )
@@ -103,4 +102,56 @@ const registerUser = async (req, res, next) => {
     }
 }
 
-export {registerUser, checkAuth};
+const login = async (req, res, next) => {
+    try{
+        const {email, username, password} = req.body;
+        if(!email || !username){
+            throw new ApiError(500, `Wrong credentials`);
+        }
+        const user = await User.findOne(
+            {
+                $or: [{ email }, { username }]
+            }
+        )
+
+        if(!user){
+            throw new ApiError(403, `User does not exist`);
+        }
+
+        if(!user.validatePassword(password)){
+            throw new ApiError(403, `Wrong password`);
+        }
+
+        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+        }
+
+        res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        data: user
+                    },
+                    "User logged in successfully"
+                )
+            )
+
+
+    }catch(err){
+        throw new ApiError(500, "Unable to login");
+    }
+}
+
+const deleteUser = async (req, res, next) => {
+    const {email, username, password} = req.body;
+
+}
+
+export {registerUser, checkAuth, login};

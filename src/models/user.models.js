@@ -75,7 +75,7 @@ UserSchema.methods.generateRefreshToken = async function(){
     return jwt.sign({
         _id: this.id,
         email: this.email,
-    }, JWT_REFRESHTOKEN, {expiresIn: JWT_REFRESHTOKEN});
+    }, JWT_REFRESHTOKEN, {expiresIn: JWT_REFRESHEXPIRY});
 }
 
 UserSchema.methods.generateTemporaryToken = function (){

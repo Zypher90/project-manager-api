@@ -11,6 +11,15 @@ const registerValidator = () => {
     ]
 }
 
+const loginValidator = () => {
+    return [
+        // body("email").trim().isEmpty().withMessage("Email is required").isEmail().withMessage("Invalid email address format"),
+        // body("password").isEmpty().withMessage("Password is required"),
+        // body("username").trim().isEmpty().withMessage("Username is required"),
+    ]
+}
+
 export {
     registerValidator,
+    loginValidator,
 }

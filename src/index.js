@@ -13,6 +13,3 @@ connectDB()
         console.log(err);
         process.exit(1);
     });
-// app.listen(PORT, () => {
-//              console.log(`Server listening on https::/localhost/${PORT}`);
-// });
